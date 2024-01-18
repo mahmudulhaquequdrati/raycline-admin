@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { apiSlice } from "../api/apiSlice";
 import { userLoggedIn } from "./authSlice";
 
@@ -14,7 +15,7 @@ export const authApi = apiSlice.injectEndpoints({
         try {
           const result = await queryFulfilled;
           localStorage.setItem(
-            "authNutraNextUser",
+            "authNutraNextAdmin",
             JSON.stringify({
               accessToken: result.data.data.accessToken,
               user: result.data.data.user,
