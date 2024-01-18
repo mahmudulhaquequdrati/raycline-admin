@@ -4,6 +4,7 @@ import Header from "./components/Header";
 import { Route, Routes } from "react-router-dom";
 import AdminDashboard from "./components/AdminDashboard";
 import Login from "./pages/Login";
+import AuthProtected from "./routes/AuthProtected";
 
 function App() {
   return (
@@ -11,7 +12,14 @@ function App() {
       <ToastContainer />
       <Header />
       <Routes>
-        <Route path="/" element={<AdminDashboard />} />
+        <Route
+          path="/"
+          element={
+            <AuthProtected>
+              <AdminDashboard />
+            </AuthProtected>
+          }
+        />
         <Route path="/login" element={<Login />} />
       </Routes>
       <Footer />

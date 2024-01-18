@@ -17,15 +17,10 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
-  //   const handleLogut = () => {
-  //     localStorage.clear();
-  //     dispatch(userLoggedOut());
-  //     navigate("/vets/login");
-  //   };
 
   const handleLogin = (e) => {
     e.preventDefault();
-    login({ email, password, userType: "vet_admin" });
+    login({ email, password });
   };
 
   useEffect(() => {
@@ -38,19 +33,12 @@ function Login() {
     }
   }, [dispatch, LoginInData, isError, navigate]);
 
-  //   useEffect(() => {
-  //     handleLogut();
-  //   }, []);
   return (
     <section className="flex justify-center items-center bg-primary pb-16 px-4 pt-8 border-[1px] border-[#EAEAEB]">
       <div className="max-w-[638px] w-full  rounded-lg px-4 py-12 md:p-8 lg:p-16 bg-white">
         <h1 className="text-[32px] font-bold leading-10 text-center mb-6">
           Login As Admin
         </h1>
-        {/* <p className="text-center text-[15px] pb-8 text-[#00000099]">
-          Accedi o registrati tramite Google per diventare un medico veterinario
-          di Racyline e prendere le prenotazioni dei tuoi clienti
-        </p> */}
         <form className="flex flex-col gap-y-4" onSubmit={handleLogin}>
           <div>
             <input
@@ -96,15 +84,6 @@ function Login() {
               "Accedi"
             )}
           </button>
-
-          <div>
-            <Link to={"/registration"} className="no-underline">
-              <p className="text-center text-[15px]">
-                Non hai ancora un account?{" "}
-                <span className={`text-primary`}>Registrati ora!</span>
-              </p>
-            </Link>
-          </div>
         </form>
       </div>
     </section>

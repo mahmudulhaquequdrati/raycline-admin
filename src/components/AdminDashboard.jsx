@@ -6,16 +6,15 @@ import { useSelector } from "react-redux";
 // import moment from "moment";
 import axios from "axios";
 import { notifySuccess } from "../components/common/Toast/Toast";
+import { useGetAllVetListsQuery } from "../features/vetLists/vetLists";
 // import PetInfoModal from "../VetDashboard/PetInfoModal";
-import { useGetVetAppointmentDetailsQuery } from "../features/appointment/appointmentApi";
 
 const AdminDashboard = () => {
-  const { user } = useSelector((state) => state.auth);
   const {
     data: allAppointmentList,
     isLoading: allAppointmentListLoading,
     refetch,
-  } = useGetVetAppointmentDetailsQuery(user?._id);
+  } = useGetAllVetListsQuery();
   const [isOpen, setIsOpen] = useState(false);
 
   const deleteAppointment = (id) => {
