@@ -11,18 +11,42 @@ import { useGetAllVetListsQuery } from "../features/vetLists/vetLists";
 
 const AdminDashboard = () => {
   const {
-    data: allAppointmentList,
+    data: allVets,
     isLoading: allAppointmentListLoading,
     refetch,
   } = useGetAllVetListsQuery();
   const [isOpen, setIsOpen] = useState(false);
 
-  const deleteAppointment = (id) => {
+  const onVetStatusChange = (id, status) => {
+    let statuses = {
+      approved: "",
+      active: "",
+    };
+    if (status === "Attiva") {
+      statuses = {
+        approved: true,
+        active: true,
+      };
+    } else if (status === "In Attesa") {
+      statuses = {
+        approved: true,
+        active: false,
+      };
+    } else if (status === "Disabilita") {
+      statuses = {
+        approved: false,
+        active: false,
+      };
+    } else {
+    }
     axios
-      .delete(`${import.meta.env.VITE_SERVER_LINK}/appointment/delete/${id}`)
+      .post(
+        `${import.meta.env.VITE_SERVER_LINK}/admin/changestatus/${id}`,
+        statuses
+      )
       .then((res) => {
-        notifySuccess("Appuntamento eliminato con successo!");
-        if (res?.data?.success) {
+        notifySuccess("Vet eliminato con successo!");
+        if (res?.data) {
           refetch();
         }
       });
@@ -71,38 +95,37 @@ const AdminDashboard = () => {
                 <tbody className="bg-white">
                   {allAppointmentListLoading
                     ? "Loading...."
-                    : allAppointmentList?.data?.map((res, i) => (
+                    : allVets?.vetList?.map((res, i) => (
                         <tr key={res} className="w-max">
                           <td align="left" className="border-t px-5 py-5 ">
                             <div className="flex   ">
                               <img
-                                src={Pets}
+                                src={res.profile_image_url}
                                 className="w-16 h-16 rounded-full"
                                 alt=""
                               />
                               <div className="ml-5 ">
                                 <p className="font-bold">
-                                  {res?.firstName} {res?.lastName}
+                                  {res?.first_name} {res?.last_name}
                                 </p>
                                 <p className="text-gray-400">
                                   {res?.userEmail}
                                 </p>
-                                <p className="text-gray-400">{res?.phone}</p>
+                                <p className="text-gray-400">{res?.email}</p>
                               </div>
                             </div>
                           </td>
                           <td align="left" className="border-t px-8 py-5">
-                            <p className="text-gray-400">
-                              Veterinario di medicina generale Veterinari di
-                              Chirurgo veterinario Animali da Compagnia
-                            </p>
+                            {res?.doctor_type1?.map((m) => (
+                              <p className="text-gray-400">{m.name}</p>
+                            ))}
                           </td>
                           <td align="left" className="border-t px-5 py-5">
-                            {i === 0 ? (
+                            {res?.approved && !res?.active ? (
                               <button className="bg-[#fff6dd] text-yellow-500 px-4 py-1.5 rounded-full">
                                 In Attesa
                               </button>
-                            ) : i === 1 ? (
+                            ) : !res?.approved && !res?.active ? (
                               <button className="bg-[#fee6de] text-red-500 px-4 py-1.5 rounded-full">
                                 Disabilitato
                               </button>
@@ -112,22 +135,6 @@ const AdminDashboard = () => {
                               </button>
                             )}
                           </td>
-                          {/* <td align="left" className="border-t px-5 py-3">
-                            <div className="flex justify-between gap-12 !border px-5 py-3 rounded">
-                              <div>
-                                <p>Rex</p>
-                                <p className="text-gray-400">Cane</p>
-                              </div>
-                              <div>
-                                <button
-                                  onClick={() => openModal()}
-                                  className="border border-primary px-5 py-3 rounded text-primary whitespace-nowrap"
-                                >
-                                  Visualizza la cartella
-                                </button>
-                              </div>
-                            </div>
-                          </td> */}
                           <td align="left" className="border-t px-5 py-2">
                             <Popover className="relative !z-[99999] ">
                               {({ open }) => (
@@ -165,38 +172,63 @@ const AdminDashboard = () => {
                                   >
                                     <Popover.Panel className="absolute -left-[100%] !z-[99999] mt-3 w-[200px] max-w-sm -translate-x-1/2 transform px-4 sm:px-0 lg:max-w-3xl">
                                       <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black/5">
-                                        <div className="relative bg-white p-5 cursor-pointer ">
-                                          <p className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out  focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50">
-                                            <div className="ml-4">
-                                              <p className="text-sm font-medium text-gray-900">
-                                                Attiva
-                                              </p>
-                                            </div>
-                                          </p>
-                                        </div>
-                                        <div
-                                          onClick={() =>
-                                            deleteAppointment(res?._id)
-                                          }
-                                          className="relative bg-white p-5  cursor-pointer"
-                                        >
-                                          <p className="-m-3 flex  items-center rounded-lg p-2 transition duration-150 ease-in-out  focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50">
-                                            <div className="ml-4">
-                                              <p className="text-sm font-medium text-red-400">
-                                                Rifiuta
-                                              </p>
-                                            </div>
-                                          </p>
-                                        </div>
-                                        <div className="relative bg-white p-5  cursor-pointer">
-                                          <p className="-m-3 flex  items-center rounded-lg p-2 transition duration-150 ease-in-out  focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50">
-                                            <div className="ml-4">
-                                              <p className="text-sm font-medium text-red-400">
-                                                Disabilita
-                                              </p>
-                                            </div>
-                                          </p>
-                                        </div>
+                                        {!res?.active && (
+                                          <div
+                                            onClick={() =>
+                                              onVetStatusChange(
+                                                res?._id,
+                                                "Attiva"
+                                              )
+                                            }
+                                            className="relative bg-white p-5 cursor-pointer "
+                                          >
+                                            <p className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out  focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50">
+                                              <div className="ml-4">
+                                                <p className="text-sm font-medium text-gray-900">
+                                                  Attiva
+                                                </p>
+                                              </div>
+                                            </p>
+                                          </div>
+                                        )}
+                                        {res?.approved && res?.active && (
+                                          <div
+                                            onClick={() =>
+                                              onVetStatusChange(
+                                                res?._id,
+                                                "In Attesa"
+                                              )
+                                            }
+                                            className="relative bg-white p-5 cursor-pointer "
+                                          >
+                                            <p className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out  focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50">
+                                              <div className="ml-4">
+                                                <p className="text-sm font-medium text-gray-900">
+                                                  In Attesa
+                                                </p>
+                                              </div>
+                                            </p>
+                                          </div>
+                                        )}
+                                        {res?.approved && (
+                                          <div
+                                            onClick={() =>
+                                              onVetStatusChange(
+                                                res?._id,
+                                                "Disabilita"
+                                              )
+                                            }
+                                            className="relative bg-white p-5  cursor-pointer"
+                                          >
+                                            <p className="-m-3 flex  items-center rounded-lg p-2 transition duration-150 ease-in-out  focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50">
+                                              <div className="ml-4">
+                                                <p className="text-sm font-medium text-red-400">
+                                                  Disabilita
+                                                </p>
+                                              </div>
+                                            </p>
+                                          </div>
+                                        )}{" "}
                                       </div>
                                     </Popover.Panel>
                                   </Transition>
