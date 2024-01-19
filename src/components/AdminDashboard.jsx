@@ -29,16 +29,17 @@ const AdminDashboard = () => {
       };
     } else if (status === "In Attesa") {
       statuses = {
-        approved: true,
-        active: false,
+        approved: false,
+        active: true,
       };
     } else if (status === "Disabilita") {
       statuses = {
-        approved: false,
+        approved: true,
         active: false,
       };
-    } else {
     }
+    // else {
+    // }
     axios
       .post(
         `${import.meta.env.VITE_SERVER_LINK}/admin/changestatus/${id}`,
@@ -116,16 +117,18 @@ const AdminDashboard = () => {
                             </div>
                           </td>
                           <td align="left" className="border-t px-8 py-5">
-                            {res?.doctor_type1?.map((m) => (
-                              <p className="text-gray-400">{m.name}</p>
+                            {res?.doctor_type1?.map((m, i) => (
+                              <p key={i} className="text-gray-400">
+                                {m.name}
+                              </p>
                             ))}
                           </td>
                           <td align="left" className="border-t px-5 py-5">
-                            {res?.approved && !res?.active ? (
+                            {!res?.approved && res?.active ? (
                               <button className="bg-[#fff6dd] text-yellow-500 px-4 py-1.5 rounded-full">
                                 In Attesa
                               </button>
-                            ) : !res?.approved && !res?.active ? (
+                            ) : res?.approved && !res?.active ? (
                               <button className="bg-[#fee6de] text-red-500 px-4 py-1.5 rounded-full">
                                 Disabilitato
                               </button>
@@ -170,67 +173,105 @@ const AdminDashboard = () => {
                                     leaveFrom="opacity-100 translate-y-0"
                                     leaveTo="opacity-0 translate-y-1"
                                   >
-                                    <Popover.Panel className="absolute -left-[100%] !z-[99999] mt-3 w-[200px] max-w-sm -translate-x-1/2 transform px-4 sm:px-0 lg:max-w-3xl">
-                                      <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black/5">
-                                        {!res?.active && (
-                                          <div
-                                            onClick={() =>
-                                              onVetStatusChange(
-                                                res?._id,
-                                                "Attiva"
-                                              )
-                                            }
-                                            className="relative bg-white p-5 cursor-pointer "
-                                          >
-                                            <p className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out  focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50">
-                                              <div className="ml-4">
-                                                <p className="text-sm font-medium text-gray-900">
-                                                  Attiva
-                                                </p>
-                                              </div>
-                                            </p>
+                                    {res.approved && res.active ? (
+                                      <Popover.Panel className="absolute -left-[100%] !z-[99999] mt-3 w-[200px] max-w-sm -translate-x-1/2 transform px-4 sm:px-0 lg:max-w-3xl">
+                                        {({ close }) => (
+                                          <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black/5">
+                                            {/* active */}
+                                            <div
+                                              onClick={() => {
+                                                onVetStatusChange(
+                                                  res?._id,
+                                                  "Disabilita"
+                                                );
+                                                close();
+                                              }}
+                                              className="relative bg-white p-5  cursor-pointer"
+                                            >
+                                              <p className="-m-3 flex  items-center rounded-lg p-2 transition duration-150 ease-in-out  focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50">
+                                                <div className="ml-4">
+                                                  <p className="text-sm font-medium text-red-400">
+                                                    Disabilita
+                                                  </p>
+                                                </div>
+                                              </p>
+                                            </div>
                                           </div>
                                         )}
-                                        {res?.approved && res?.active && (
-                                          <div
-                                            onClick={() =>
-                                              onVetStatusChange(
-                                                res?._id,
-                                                "In Attesa"
-                                              )
-                                            }
-                                            className="relative bg-white p-5 cursor-pointer "
-                                          >
-                                            <p className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out  focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50">
-                                              <div className="ml-4">
-                                                <p className="text-sm font-medium text-gray-900">
-                                                  In Attesa
+                                      </Popover.Panel>
+                                    ) : !res?.approved && res?.active ? (
+                                      <Popover.Panel className="absolute -left-[100%] !z-[99999] mt-3 w-[200px] max-w-sm -translate-x-1/2 transform px-4 sm:px-0 lg:max-w-3xl">
+                                        {({ close }) => (
+                                          <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black/5">
+                                            {/* in progress */}
+                                            <>
+                                              <div
+                                                onClick={() => {
+                                                  onVetStatusChange(
+                                                    res?._id,
+                                                    "Attiva"
+                                                  );
+                                                  close();
+                                                }}
+                                                className="relative bg-white p-5 cursor-pointer "
+                                              >
+                                                <p className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out  focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50">
+                                                  <div className="ml-4">
+                                                    <p className="text-sm font-medium text-gray-900">
+                                                      Attiva
+                                                    </p>
+                                                  </div>
                                                 </p>
                                               </div>
-                                            </p>
+                                              <div
+                                                onClick={() => {
+                                                  onVetStatusChange(
+                                                    res?._id,
+                                                    "Disabilita"
+                                                  );
+                                                  close();
+                                                }}
+                                                className="relative bg-white p-5 cursor-pointer "
+                                              >
+                                                <p className="-m-3 flex  items-center rounded-lg p-2 transition duration-150 ease-in-out  focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50">
+                                                  <div className="ml-4">
+                                                    <p className="text-sm font-medium text-red-400">
+                                                      Rifiuta
+                                                    </p>
+                                                  </div>
+                                                </p>
+                                              </div>
+                                            </>
                                           </div>
                                         )}
-                                        {res?.approved && (
-                                          <div
-                                            onClick={() =>
-                                              onVetStatusChange(
-                                                res?._id,
-                                                "Disabilita"
-                                              )
-                                            }
-                                            className="relative bg-white p-5  cursor-pointer"
-                                          >
-                                            <p className="-m-3 flex  items-center rounded-lg p-2 transition duration-150 ease-in-out  focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50">
-                                              <div className="ml-4">
-                                                <p className="text-sm font-medium text-red-400">
-                                                  Disabilita
-                                                </p>
-                                              </div>
-                                            </p>
+                                      </Popover.Panel>
+                                    ) : res?.approved && !res?.active ? (
+                                      <Popover.Panel className="absolute -left-[100%] !z-[99999] mt-3 w-[200px] max-w-sm -translate-x-1/2 transform px-4 sm:px-0 lg:max-w-3xl">
+                                        {({ close }) => (
+                                          <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black/5">
+                                            {/* disabled */}
+                                            <div
+                                              onClick={() => {
+                                                onVetStatusChange(
+                                                  res?._id,
+                                                  "Attiva"
+                                                );
+                                                close();
+                                              }}
+                                              className="relative bg-white p-5 cursor-pointer "
+                                            >
+                                              <p className="-m-3 flex items-center rounded-lg p-2 transition duration-150 ease-in-out  focus:outline-none focus-visible:ring focus-visible:ring-orange-500/50">
+                                                <div className="ml-4">
+                                                  <p className="text-sm font-medium text-gray-900">
+                                                    Attiva
+                                                  </p>
+                                                </div>
+                                              </p>
+                                            </div>
                                           </div>
-                                        )}{" "}
-                                      </div>
-                                    </Popover.Panel>
+                                        )}
+                                      </Popover.Panel>
+                                    ) : null}
                                   </Transition>
                                 </>
                               )}
