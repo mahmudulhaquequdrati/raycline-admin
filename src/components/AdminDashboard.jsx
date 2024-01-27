@@ -8,6 +8,7 @@ import axios from "axios";
 import { notifySuccess } from "../components/common/Toast/Toast";
 import { useGetAllVetListsQuery } from "../features/vetLists/vetLists";
 // import PetInfoModal from "../VetDashboard/PetInfoModal";
+import emailjs from "@emailjs/browser";
 
 const AdminDashboard = () => {
   const {
@@ -17,7 +18,7 @@ const AdminDashboard = () => {
   } = useGetAllVetListsQuery();
   const [isOpen, setIsOpen] = useState(false);
 
-  const onVetStatusChange = (id, status) => {
+  const onVetStatusChange = (id, status, name, email) => {
     let statuses = {
       approved: "",
       active: "",
@@ -48,10 +49,34 @@ const AdminDashboard = () => {
       .then((res) => {
         notifySuccess("Vet eliminato con successo!");
         if (res?.data) {
+          if (status === "Attiva") {
+            // send email
+            emailjs
+              .send(
+                "service_is7aog9",
+                "template_21dcoca",
+                {
+                  name: name,
+                  email: email,
+                  reply_to: email,
+                },
+                "user_x2aq1Ig2bYqnAn0XQwwE1"
+              )
+              .then(
+                (result) => {
+                  console.log(result.text);
+                },
+                (error) => {
+                  console.log(error.text);
+                }
+              );
+          }
           refetch();
         }
       });
   };
+
+  console.log(allVets);
 
   return (
     <div className="bg-primary ">
@@ -209,7 +234,11 @@ const AdminDashboard = () => {
                                                 onClick={() => {
                                                   onVetStatusChange(
                                                     res?._id,
-                                                    "Attiva"
+                                                    "Attiva",
+                                                    res?.first_name +
+                                                      " " +
+                                                      res?.last_name,
+                                                    res?.email
                                                   );
                                                   close();
                                                 }}
@@ -254,7 +283,11 @@ const AdminDashboard = () => {
                                               onClick={() => {
                                                 onVetStatusChange(
                                                   res?._id,
-                                                  "Attiva"
+                                                  "Attiva",
+                                                  res?.first_name +
+                                                    " " +
+                                                    res?.last_name,
+                                                  res?.email
                                                 );
                                                 close();
                                               }}
