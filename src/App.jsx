@@ -5,6 +5,8 @@ import { Route, Routes } from "react-router-dom";
 import AdminDashboard from "./components/AdminDashboard";
 import Login from "./pages/Login";
 import AuthProtected from "./routes/AuthProtected";
+import Utenti from "./components/Utenti";
+import PetInfo from "./components/PetInfo";
 
 function App() {
   return (
@@ -17,6 +19,22 @@ function App() {
           element={
             <AuthProtected>
               <AdminDashboard />
+            </AuthProtected>
+          }
+        />
+        <Route
+          path="/utenti"
+          element={
+            <AuthProtected>
+              <Utenti />
+            </AuthProtected>
+          }
+        />
+        <Route
+          path="/petinfo"
+          element={
+            <AuthProtected>
+              <PetInfo />
             </AuthProtected>
           }
         />
