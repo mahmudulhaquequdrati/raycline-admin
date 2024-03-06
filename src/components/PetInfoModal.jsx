@@ -1,14 +1,12 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import CancelIcon from "../assets/ICONS/Cancel.svg";
 import defaultPetImage from "../assets/pets/pets-dog.png";
 import moment from "moment";
-import { petInfo } from "../features/fakeData/petInfo";
-const PetInfoModal = ({ isOpen, setIsOpen }) => {
+const PetInfoModal = ({ isOpen, setIsOpen, data }) => {
   function closeModal() {
     setIsOpen(false);
   }
-  const [data, setData] = useState(petInfo);
 
   const openImage = (url) => {
     window.open(url, "_blank");

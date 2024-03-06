@@ -1,15 +1,8 @@
-/* eslint-disable no-unused-vars */
-import { Popover, Transition } from "@headlessui/react";
-import Pets from "../assets/pets/pets-dog.png";
-import { Fragment, useState } from "react";
-import { useSelector } from "react-redux";
-// import moment from "moment";
 import axios from "axios";
-import { notifySuccess } from "./common/Toast/Toast";
 import { useGetAllVetListsQuery } from "../features/vetLists/vetLists";
-// import PetInfoModal from "../VetDashboard/PetInfoModal";
-import emailjs from "@emailjs/browser";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import moment from "moment";
 
 const Utenti = () => {
   const {
@@ -18,7 +11,16 @@ const Utenti = () => {
     refetch,
   } = useGetAllVetListsQuery();
   const navigate = useNavigate();
-
+  const [userData, setUserData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    axios
+      .get(`${import.meta.env.VITE_SERVER_LINK}/user/by/role`)
+      .then((res) => {
+        setUserData(res?.data?.users);
+        setIsLoading(false);
+      });
+  }, []);
   return (
     <div className="bg-primary ">
       {/* {isOpen && <PetInfoModal isOpen={isOpen} setIsOpen={setIsOpen} />} */}
@@ -43,13 +45,13 @@ const Utenti = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white">
-                  {allAppointmentListLoading
+                  {isLoading
                     ? "Loading...."
-                    : allVets?.vetList?.map((res, i) => (
+                    : userData?.map((res, i) => (
                         <tr
-                          key={res}
+                          key={res._id}
                           className="w-max cursor-pointer"
-                          onClick={() => navigate("/petinfo")}
+                          onClick={() => navigate(`/petinfo/${res?._id}`)}
                         >
                           <td align="left" className="border-t px-5 py-5 ">
                             <div className="flex   ">
@@ -66,15 +68,14 @@ const Utenti = () => {
                                   {res?.userEmail}
                                 </p>
                                 <p className="text-gray-400">{res?.email}</p>
+                                <p className="text-gray-400">{res?.phone}</p>
                               </div>
                             </div>
                           </td>
                           <td align="left" className="border-t px-8 py-5">
-                            {res?.doctor_type1?.map((m, i) => (
-                              <p key={i} className="text-gray-400">
-                                {m.name}
-                              </p>
-                            ))}
+                            {moment(res?.createdAt).format(
+                              "DD/MM/YYYY, hh:mm a"
+                            )}
                           </td>
                           <td align="right" className="border-t px-8 py-5">
                             <span>{`>`}</span>

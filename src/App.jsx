@@ -31,7 +31,7 @@ function App() {
           }
         />
         <Route
-          path="/petinfo"
+          path="/petinfo/:id"
           element={
             <AuthProtected>
               <PetInfo />
